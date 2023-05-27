@@ -16,6 +16,7 @@ export default function Customer() {
       lastName: ''
     }
   });
+
   const onSave = async (data) => {
     let nombre = data.firstName;
     let apellidos = data.lastName
@@ -32,6 +33,36 @@ export default function Customer() {
 
   };
 
+  const onUpdate = async () => {
+    const response = await axios.put(`http://127.0.0.1:3000/api/clientes/${idSearch}`, {
+      nombre:data.firstName,
+      apellidos:data.lastName,
+    });
+    if (!response.data.error){
+      setValue("firstName",response.data.nombre);
+      setValue("lastName",response.data.apellidos);
+      setMessage('');
+      setIsError(false)
+    }
+    else {
+      setIsError(true);
+      setMessage('Cliente actualizado correctamente')
+    }
+    //console.log(response.data)
+  }
+
+const onDelete = async () => {
+  if (confirm(`Esta seguro de eliminar el cliente ${data.firstName} ${data.lastName}?`)){
+    const response = await axios.delete(`http://127.0.0.1:3000/api/clientes/${idSearch}`)
+    setIsError(false)
+    setMessage("Cliente eliminado correctamente");
+    setTimeout(() => {
+      setMessage("")
+      reset();
+    }, 2000);
+  }
+}
+
   const onSearch = async () => {
     const response = await axios.get(`http://127.0.0.1:3000/api/clientes/${idSearch}`);
     if (!response.data.error){
@@ -45,10 +76,6 @@ export default function Customer() {
       setMessage('El id del cliente NO existe. Intentelo con otro...')
     }
     //console.log(response.data)
-  }
-
-  const onUpdate = async (data) =>{
-
   }
 
   return (
@@ -125,16 +152,17 @@ export default function Customer() {
       <View style={{marginTop:20, flexDirection:'row'}}>
         <Button 
           icon="pencil-outline" 
-          mode="contained" onPress={onUpdate}>
+          mode="contained" onPress={handleSubmit(onUpdate)}>
           Actualizar
         </Button>
         <Button 
           style={{backgroundColor:'red',marginLeft:10}}
           icon="delete-outline" 
-          mode="contained" onPress={() => console.log('Pressed')}>
+          mode="contained" onPress={handleSubmit(onDelete)}>
           Eliminar
         </Button>
       </View>
+
       {/*
       <View style={{marginTop:20, flexDirection:'row'}}>
         <Button 
