@@ -175,4 +175,3 @@ const onDelete = async () => {
     </View>
   );
 }
-
